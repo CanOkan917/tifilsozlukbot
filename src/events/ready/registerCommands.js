@@ -48,7 +48,7 @@ module.exports = async (client) => {
                     options,
                 });
 
-                logger.info(`👍 Registered command "${name}."`);
+                logger.info(`👍 Registered command "${name}"`);
             }
         }
     } catch (error) {
