@@ -9,12 +9,14 @@ const client = new Client({
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildMembers,
         IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildPresences,
         IntentsBitField.Flags.MessageContent,
     ]
 });
 
 (async () => {
     eventHandler(client);
+    client.login(process.env.BOT_TOKEN);
 
     mongoose.set('strictQuery', false);
     await mongoose.connect(
@@ -25,5 +27,3 @@ const client = new Client({
         logger.error(err);
     });
 })();
-
-client.login(process.env.BOT_TOKEN);

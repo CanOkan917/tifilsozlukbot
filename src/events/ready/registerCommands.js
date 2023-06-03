@@ -3,7 +3,12 @@ const getApplicationCommands = require("../../utils/getApplicationCommands");
 const getLocalCommands = require("../../utils/getLocalCommands");
 const areCommandsDifferent = require('../../utils/areCommandsDifferent');
 const logger = require('pino')();
+const { Client } = require('discord.js');
 
+/**
+ * 
+ * @param {Client} client 
+ */
 module.exports = async (client) => {
     try {
         const localCommands = getLocalCommands();
