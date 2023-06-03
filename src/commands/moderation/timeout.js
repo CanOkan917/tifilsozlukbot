@@ -11,28 +11,28 @@ module.exports = {
     callback: async (client, interaction) => {
         const mentionable = interaction.options.get('target-user').value;
         const duration = interaction.options.get('duration').value;
-        const reason = interaction.options.get('reason')?.value || 'No reason provided';
+        const reason = interaction.options.get('reason')?.value || 'Herhangi bir neden belirtilmedi';
 
         await interaction.deferReply();
 
         const targetUser = await interaction.guild.members.fetch(mentionable);
 
         if (!targetUser) {
-            await interaction.editReply('`❌ That user doesn\'t exist in this server`');
+            await interaction.editReply('`❌ Böyle bir kullanıcı yok`');
             return;
         }
         if (targetUser.user.bot) {
-            await interaction.editReply('`❌ I can\'t timeout a bot.`');
+            await interaction.editReply('`❌ meslektaşlarımı zaman aşımına uğratmıcam 😡`');
             return;
         }
 
         const msDuration = ms(duration);
         if (isNaN(msDuration)) {
-            await interaction.editReply('`❌ Please provide a valid timeout duration.`');
+            await interaction.editReply('`❌ Lütfen geçerli bir süre gir (10s 10m 10h 10d)`');
             return;
         }
         if (msDuration < 5000 || msDuration > 2.419e9) {
-            await interaction.editReply('`❌ Timeout duration cannot be less than 5 seconds or more than 28 days.`');
+            await interaction.editReply('`❌ zaman aşımı 5 saniyeden az 28 günden fazla olamaz`');
             return;
         }
 
@@ -40,11 +40,11 @@ module.exports = {
         const requestUserRolePosition = interaction.member.roles.highest.position;
         const botRolePosition = interaction.guild.members.me.roles.highest.position;
         if (targetUserRolePosition >= requestUserRolePosition) {
-            await interaction.editReply('`❌ You can\'t timeout that user because they have the same/higher role than you.`');
+            await interaction.editReply('`❌ Bu kullanıcıyı zaman aşımına uğratamazsın çünkü seninle aynı veya daha yüksek bir rolü var`');
             return;
         }
         if (targetUserRolePosition >= botRolePosition) {
-            await interaction.editReply('`❌ I can\'t timeout that user because they have the same/higher role than me.`');
+            await interaction.editReply('`❌ Bu kullanıcıyı zaman aşımına uğratamam çünkü benimle aynı veya daha yüksek bir rolü var`');
             return;
         }
 
@@ -53,33 +53,33 @@ module.exports = {
 
             if (targetUser.isCommunicationDisabled()) {
                 await targetUser.timeout(msDuration, `${reason} | By: ${interaction.user.tag}`);
-                await interaction.editReply(`\`✅ \`${targetUser}\`'s timeout has been updated to ${prettyMs(msDuration, { verbose: true })} | Reason: ${reason}\``);
+                await interaction.editReply(`\`✅ \`${targetUser}\`'in zaman aşımı ${prettyMs(msDuration, { verbose: true })} olarak değiştirildi | Neden: ${reason}\``);
                 return; 
             }
             await targetUser.timeout(msDuration, `${reason} | By: ${interaction.user.tag}`);
-            await interaction.editReply(`\`✅ \`${targetUser}\`was timed out for ${prettyMs(msDuration, { verbose: true })}. | Reason: ${reason}\``);
+            await interaction.editReply(`\`✅ \`${targetUser}\`'in zaman aşımı ${prettyMs(msDuration, { verbose: true })} olarak eklendi | Neden: ${reason}\``);
         } catch (error) {
             logger.error(error);
         }
     },
     name: 'timeout',
-    description: 'Timeout a user.',
+    description: 'zaman aşımı gönder',
     options: [
         {
             name: 'target-user',
-            description: 'The user you want to timeout.',
+            description: 'zaman aşımına uğratmak istediğin kişi',
             type: ApplicationCommandOptionType.Mentionable,
             required: true,
         },
         {
             name: 'duration',
-            description: 'Timeout duration (30m, 1h, 1d).',
+            description: 'süre (30m, 1h, 1d).',
             type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
             name: 'reason',
-            description: 'The reason for the timeout.',
+            description: 'neden',
             type: ApplicationCommandOptionType.String,
         }
     ],
