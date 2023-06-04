@@ -37,12 +37,12 @@ module.exports = async (client) => {
                             options,
                         });
     
-                        logger.info(`🔁 Edited command "${name}" for guild '${guild.name}`);
+                        logger.info(`🔁 Edited command "${name}" for guild '${guild.name}'`);
                     }
                 } else {
                     if (localCommand.deleted) {
                         logger.info(
-                            `⏩ Skipping registering command "${name}" for guild '${guild.name} as it's set to delete. `
+                            `⏩ Skipping registering command "${name}" for guild '${guild.name}' as it's set to delete. `
                         );
                         continue;
                     }
@@ -53,7 +53,7 @@ module.exports = async (client) => {
                         options,
                     });
     
-                    logger.info(`👍 Registered command "${name}" for guild '${guild.name}`);
+                    logger.info(`👍 Registered command "${name}" for guild '${guild.name}'`);
                 }
             }
         });
