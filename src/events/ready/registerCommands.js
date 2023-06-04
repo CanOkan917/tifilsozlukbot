@@ -1,4 +1,3 @@
-const { testServer } = require('../../../config.json');
 const getApplicationCommands = require("../../utils/getApplicationCommands");
 const getLocalCommands = require("../../utils/getLocalCommands");
 const areCommandsDifferent = require('../../utils/areCommandsDifferent');
@@ -12,50 +11,52 @@ const { Client } = require('discord.js');
 module.exports = async (client) => {
     try {
         const localCommands = getLocalCommands();
-        const applicationCommands = await getApplicationCommands(
-            client,
-            testServer
-        );
-
-        for (const localCommand of localCommands) {
-            const { name, description, options } = localCommand;
-
-            const existingCommand = await applicationCommands.cache.find(
-                (cmd) => cmd.name === name
+        client.guilds.cache.forEach(async (guild) => {
+            const applicationCommands = await getApplicationCommands(
+                client,
+                guild.id
             );
-
-            if (existingCommand) {
-                if (localCommand.deleted) {
-                    await applicationCommands.delete(existingCommand.id);
-                    logger.info(`Deleted command '${name}'`);
-                    continue;
-                }
-
-                if (areCommandsDifferent(existingCommand, localCommand)) {
-                    await applicationCommands.edit(existingCommand.id, {
+    
+            for (const localCommand of localCommands) {
+                const { name, description, options } = localCommand;
+    
+                const existingCommand = await applicationCommands.cache.find(
+                    (cmd) => cmd.name === name
+                );
+    
+                if (existingCommand) {
+                    if (localCommand.deleted) {
+                        await applicationCommands.delete(existingCommand.id);
+                        logger.info(`Deleted command '${name}' for guild '${guild.name}'`);
+                        continue;
+                    }
+    
+                    if (areCommandsDifferent(existingCommand, localCommand)) {
+                        await applicationCommands.edit(existingCommand.id, {
+                            description,
+                            options,
+                        });
+    
+                        logger.info(`🔁 Edited command "${name}" for guild '${guild.name}`);
+                    }
+                } else {
+                    if (localCommand.deleted) {
+                        logger.info(
+                            `⏩ Skipping registering command "${name}" for guild '${guild.name} as it's set to delete. `
+                        );
+                        continue;
+                    }
+    
+                    await applicationCommands.create({
+                        name,
                         description,
                         options,
                     });
-
-                    logger.info(`🔁 Edited command "${name}".`);
+    
+                    logger.info(`👍 Registered command "${name}" for guild '${guild.name}`);
                 }
-            } else {
-                if (localCommand.deleted) {
-                    logger.info(
-                        `⏩ Skipping registering command "${name}" as it's set to delete.`
-                    );
-                    continue;
-                }
-
-                await applicationCommands.create({
-                    name,
-                    description,
-                    options,
-                });
-
-                logger.info(`👍 Registered command "${name}"`);
             }
-        }
+        });
     } catch (error) {
         logger.error(error);
     }
