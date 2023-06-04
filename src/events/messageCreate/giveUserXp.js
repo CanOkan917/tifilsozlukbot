@@ -15,7 +15,7 @@ module.exports = async (client, message) => {
     if (message.content.length > config.minPointsMessageLenght) {
         if (cooldowns.has(message.author.id)) return;
 
-        const xpToGive = Math.floor(message.content.length / config.minPointsMessageLenght);
+        const xpToGive = Math.floor(message.content.length * config.xpPerLenght);
 
         const query = {
             userId: message.author.id,
